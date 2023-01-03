@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Expense tracker</title>
+</head>
+<body>
+    <div class="container">
+    <h1 style="text-align: center; color:black;">Expense Tracker</h1>
+    <form onsubmit="savetolocalstroage(event)">
+            <label>Choose Expence amount</label>
+            <input id="expenceamount" type="number" name="amount"  min="1" max="1000"/>
+            <label>Choose Describtion</label>
+            <input id="Describtion" type="text" name="Describtion"/>
+            <label for="category">Choose a category:</label>
+            <select id="category" name="category">
+            <option value="Fuel">Fuel</option>
+            <option value="Food">Food</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Movie">Movie</option>
+            </select>
+            <button>Add Expense</button>
+    </form>
+    </div> 
+     <ul id="listofdetails"></ul>
+
+
+    <script>
+         function savetolocalstroage(event){
+                event.preventDefault();
+                var amount=event.target.amount.value;
+                var Describtion=event.target.Describtion.value;
+                var category=event.target.category.value;
+                details={
+                    amount:amount,
+                    Describtion:Describtion,
+                    category:category
+
+                }
+                localStorage.setItem(details.Describtion,JSON.stringify(details));
+                 showUserOnScren(details)
+            }
+            window.addEventListener("DOMContentLoaded", () => {
+                const localStorageObj = localStorage;
+                const localstoragekeys  = Object.keys(localStorageObj)
+
+                for(var i =0; i< localstoragekeys.length; i++){
+                    const key = localstoragekeys[i]
+                    const userDetailsString = localStorageObj[key];
+                    const userDetailsObj = JSON.parse(userDetailsString);
+                     showUserOnScren(userDetailsObj)
+                }
+            })
+            function showUserOnScren(user){
+                if(localStorage.getItem(user.Describtion) !== null){
+                    removeUserFromScreen(user.Describtion)
+                }
+                const parentnode=document.getElementById('listofdetails');
+                const  childHtml=`<li id=${user.Describtion}> ${user.amount} - ${user.Describtion}-${user.category}
+                    <button onclick=edituser('${user.Describtion}','${user.amount}','${user.category}')>Edit</button>
+                                        <button onclick=deleteUser('${user.Describtion}')> Delete Expense </button>
+                                     </li>`;
+                parentnode.innerHTML=parentnode.innerHTML+childHtml;
+            }
+            function deleteUser(Describtion){
+                console.log(Describtion);
+                localStorage.removeItem(Describtion);
+                removeUserFromScreen(Describtion);
+            }
+            function removeUserFromScreen(Describtion){
+                const parentNode = document.getElementById('listofdetails');
+                const childNodeToBeDeleted = document.getElementById(Describtion);
+
+                if(childNodeToBeDeleted) {
+                    parentNode.removeChild(childNodeToBeDeleted);
+                }
+            }
+            function edituser(Describtion,amount,category){
+                document.getElementById('Describtion').value=Describtion;
+                document.getElementById('expenceamount').value=amount;
+                document.getElementById('category').value=category;
+               deleteUser(Describtion);
+                
+            }
+    </script>
+</body>
+</html>
